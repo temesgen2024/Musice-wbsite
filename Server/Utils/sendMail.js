@@ -12,25 +12,29 @@ export const sendmail = async (options) =>{
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT),
-        secure: process.env.SMTP_SECURE === 'true',
+        service: process.env.SMTP_SERVICE,
 
         
         auth: {
-            user: process.env.SMTP_EMAIL,
+            user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASSWORD
-        }
+        },
+        secure: true,
     });
+    const { email, subject, template, data } = options;
 
-    const templatePath = path.join(__dirname, '../mails', options.template);
+    const templatePath = path.join(__dirname, "../mails", template);
 
-    const html = await ejs.renderFile(templatePath, options.data);
+    const html = await ejs.renderFile(templatePath, data);
     const mailOptions = {
         from: process.env.SMTP_FROM_NAME ,
-        to: options.email,
-        subject: options.subject,
+        to: email,
+        subject,
         html
     };
 
 
     await transporter.sendMail(mailOptions);
 }
+
+export default sendmail;

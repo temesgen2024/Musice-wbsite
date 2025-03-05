@@ -61,5 +61,16 @@ userSchema.methods.SignAccessToken = function(){
     const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES || "5", 10);
     return jwt.sign({id : this._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn : accessTokenExpires});
 }
+
+userSchema.methods.SignRefreshToken = function(){
+    const refreshTokenExpires = parseInt(process.env.REFRESH_TOKEN_EXPIRES || "7", 10);
+    return jwt.sign({id : this._id}, process.env.REFRESH_TOKEN, {expiresIn : refreshTokenExpires});
+}
+
+userSchema.methods.comparePassword = async function(enteredPassword){
+    return await bcrypt.compare(enteredPassword, this.password);
+}
+
+
 const userModel = mongoose.model("User", userSchema) || mongoose.model.User
 export default userModel;
