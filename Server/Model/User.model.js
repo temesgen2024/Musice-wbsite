@@ -58,8 +58,8 @@ userSchema.pre("save", async function(next){
 });
 
 userSchema.methods.SignAccessToken = function(){
-    const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES || "5", 10);
-    return jwt.sign({id : this._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn : accessTokenExpires});
+    const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES || "10", 10);
+    return jwt.sign({id : this._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn : accessTokenExpires * 60});
 }
 
 userSchema.methods.SignRefreshToken = function(){

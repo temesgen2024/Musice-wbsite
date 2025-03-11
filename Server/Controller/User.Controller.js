@@ -3,6 +3,8 @@ import catchAsyncError from "../Middleware/CatchAsyncError.js";
 import jwt from "jsonwebtoken";
 import sendmail from "../Utils/sendMail.js";
 import { sendTokens } from "../Utils/jwt.js";
+import ArtistModel from "../Model/Artist.model.js";
+import { redis } from "../Utils/redis.js";
 // register a new user => /api/v1/register
 export const registerUser = catchAsyncError(async (req, res) => {
     const { name, email, password } = req.body;
@@ -82,4 +84,53 @@ export const loginUser = catchAsyncError(async (req, res) => {
     }
 
     sendTokens(user, 200, res);
+});
+
+export const updateProfile = catchAsyncError(async (req, res) => {
+    const userId = req.user._id;
+    if(!userId){
+        return res.status(400).json({ message: "User not found" });
+    }
+
+    const {name,password,avatar,bio,genres,socialLinks} = req.body;
+
+    const user = await userModel.findById(userId);
+    if(!user){
+        return res.status(400).json({ message: "User not found" });
+    }
+
+    if (name) user.name = name;
+    if (password) user.password = await bcrypt.hash(password, 10);  
+    if (avatar) {
+        if (user.avatar.public_id ) {
+            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        }
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatar",
+            width: 150,
+            crop: "scale"
+        });
+        user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url
+        }
+    }
+    await user.save();
+
+    let combinedData = {...user.toObject()};
+
+    if (user.role === "artist") {
+        const artist = await ArtistModel.findOne({ userId});
+        if(!artist){
+            return res.status(400).json({ message: "Artist not found" });
+        }
+        if (bio) artist.bio = bio;
+        if (genres) artist.genres = genres;
+        if (socialLinks) artist.socialLinks = socialLinks;
+        await artist.save();
+        combinedData = {...combinedData, artist};
+    }
+    await redis.set(userId, JSON.stringify(combinedData));
+    return res.status(200).json({ success: true , user: combinedData});
+
 });
