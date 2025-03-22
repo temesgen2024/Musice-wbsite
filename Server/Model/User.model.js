@@ -39,9 +39,45 @@ const userSchema = new Schema({
         enmu : ["user", "admin", "artist"],
         default : "user"
     },
-    isPremium :{
-        type : Boolean,
-        default : false
+
+    likedSongs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Song',
+    }],
+    dislikedSongs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Song',
+    }],
+    favoriteSongs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Song',
+    }],
+    playlists: [{
+        name: {
+            type: String,
+            required: true,
+        },
+        songs: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Song',
+        }],
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+    }],
+    followingArtists: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Artist',
+        
+    }],
+    isPremium: {
+        type: Boolean,
+        default: false,
+    },
+    subscription: {
+        type: Schema.Types.ObjectId,
+        ref: 'Subscription',
     },
     createdAt :{
         type : Date,

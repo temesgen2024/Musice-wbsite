@@ -5,7 +5,7 @@ import cloudinary from 'cloudinary';
 export const uploadsinglesong = async (filePath)=>{
     try {
         const res = await cloudinary.uploader.upload(filePath, {
-            resource_type: "video",
+            resource_type: "auto",
             folder: "singlesongs"
         });
         return res;

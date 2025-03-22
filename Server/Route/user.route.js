@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser,activaUserAccount, loginUser, updateProfile } from '../Controller/User.Controller.js';
+import { registerUser,activaUserAccount, loginUser, updateProfile, logoutUser, getUserProfile, followUnfollowArtist, getAllFollowing } from '../Controller/User.Controller.js';
 import { isAuthinticated } from '../Middleware/auth.middleware.js';
 
 // create an express router
@@ -14,8 +14,16 @@ UserRouter.post('/activate', activaUserAccount);
 // user login route
 UserRouter.post('/login', loginUser);
 
+// user logout route
+UserRouter.post("/logout", isAuthinticated, logoutUser)
+
+UserRouter.get("/me",isAuthinticated,getUserProfile)
+
+// user profile update route
 UserRouter.put('/update', isAuthinticated, updateProfile);
 
+UserRouter.post("/followUnfollow",isAuthinticated,followUnfollowArtist)
+UserRouter.get("/getAllFollowing",isAuthinticated,getAllFollowing)
 
 export default UserRouter;
 
