@@ -1,22 +1,25 @@
-import mullter from "multer";
+// config/multer.js
+import multer from 'multer';
 
-const storage = mullter.diskStorage({
+// Configure storage for Multer
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, 'uploads/'); // Ensure this directory exists
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    },
+        cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
+    }
 });
 
-const uploadSingle = mullter({
-    storage: storage,
-    limits: { fileSize: 10*1024*1024 }, // 1 MB limit
-}).single("song");
+// Initialize Multer with the storage configuration
+const uploadSingle = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit per file
+}).single('songFile'); // Accept a single song
 
-const uploadMultipleSongs = mullter({
-    storage: storage,
-    limits: { fileSize: 10*1024*1024 }, // 1 MB limit
-}).array("songs", 10); // Up to 10 files
+const uploadMultiple = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit per file
+}).array('songs', 10); // Accept up to 10 songs
 
-export { uploadSingle, uploadMultipleSongs };
+export { uploadSingle, uploadMultiple };

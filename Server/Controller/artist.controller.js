@@ -1,5 +1,3 @@
-import ArtistModel from "../Model/Artist.model";
-import { redis } from "../Utils/redis.js";
 import cloudinary from "cloudinary";
 import userModel from "../Model/User.model.js";
 import catchAsyncError from "../Middleware/CatchAsyncError.js";
@@ -7,7 +5,7 @@ import { createArtistProfile } from "../Service/artist.service.js";
 
 
 export const createArtistProfileController = catchAsyncError(async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const {  bio, genre, socialLinks } = req.body;
     if (!userId) {
         return res.status(400).json({ message: "User not found" });

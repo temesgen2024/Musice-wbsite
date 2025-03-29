@@ -1,5 +1,5 @@
-import { redis } from "../Utils/redis";
-import ArtistModel from "../Model/Artist.model";
+import { redis } from "../Utils/redis.js";
+import ArtistModel from "../Model/Artist.model.js";
 
 
 export const createArtistProfile = async (userId, bio, genre, socialLinks) => {

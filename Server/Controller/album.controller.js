@@ -30,17 +30,29 @@ const getArtistWithUser = async (artistId) => {
 export const uploadSingleSong = catchAsyncError(async (req, res) => {
     const artistId = req.params.artistId;
     const { title, genre } = req.body;
-    const { song, coverImg } = req.files;
+    console.log(req.body)
+    console.log(req.file)
 
+    if (!req.file || !req.file.song || !req.file.coverImg) {
+        return res.status(400).json({ message: "Song file and cover image are required" });
+    }
+
+    const { song, coverImg } = req.file;
+    console.log(song.path)
     if (!title || !genre || !coverImg || !song) {
         return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if the song file exists
+    if (!fs.existsSync(song.path)) {
+        return res.status(400).json({ message: "Song file not found" });
     }
 
     const artist = await ArtistModel.findById(artistId);
     if (!artist) {
         return res.status(400).json({ message: "Artist not found" });
     }
-
+    console.log(song.path)
     const songUpload = await uploadsinglesong(song.path);
     const myCloud = await cloudinary.v2.uploader.upload(coverImg.path, {
         folder: "coverimg",

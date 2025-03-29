@@ -28,7 +28,7 @@ UserRouter.get("/getAllFollowing",isAuthinticated,getAllFollowing)
 UserRouter.get("/getAllSongs",isAuthinticated,getAllSongs)
 UserRouter.get("/getAllAlbums",isAuthinticated,getAllAlbums)
 UserRouter.get("/getSong/:id",isAuthinticated,getSongsById)
-UserRouter.get("/getAlbum/:id",isAuthinticated.getAllAlbums)
+UserRouter.get("/getAlbum/:id",isAuthinticated,getAllAlbums)
 
 export default UserRouter;
 
