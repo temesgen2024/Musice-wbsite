@@ -15,11 +15,23 @@ const storage = multer.diskStorage({
 const uploadSingle = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit per file
-}).single('songFile'); // Accept a single song
+}).fields([
+    { name: 'song', maxCount: 1 }, // Match 'song' field for single song upload
+    { name: 'coverImg', maxCount: 1 } // Match 'coverImg' field for cover image
+]);
 
 const uploadMultiple = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit per file
-}).array('songs', 10); // Accept up to 10 songs
+}).fields([
+    { name: 'songs', maxCount: 10 }, // Match 'songs' field for multiple song uploads
+    { name: 'coverImg', maxCount: 1 } // Match 'coverImg' field for album cover image
+]);
 
-export { uploadSingle, uploadMultiple };
+// Middleware to log incoming field names for debugging
+const logFieldNames = (req, res, next) => {
+    console.log('Incoming fields:', req.body, req.files);
+    next();
+};
+
+export { uploadSingle, uploadMultiple, logFieldNames };

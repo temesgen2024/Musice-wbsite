@@ -30,15 +30,17 @@ const getArtistWithUser = async (artistId) => {
 export const uploadSingleSong = catchAsyncError(async (req, res) => {
     const artistId = req.params.artistId;
     const { title, genre } = req.body;
-    console.log(req.body)
-    console.log(req.file)
+    console.log(req.body);
+    console.log(req.files);
 
-    if (!req.file || !req.file.song || !req.file.coverImg) {
+    const song = req.files?.song?.[0];
+    const coverImg = req.files?.coverImg?.[0];
+
+    if (!song || !coverImg) {
         return res.status(400).json({ message: "Song file and cover image are required" });
     }
 
-    const { song, coverImg } = req.file;
-    console.log(song.path)
+    console.log(song.path);
     if (!title || !genre || !coverImg || !song) {
         return res.status(400).json({ message: "All fields are required" });
     }
@@ -52,7 +54,7 @@ export const uploadSingleSong = catchAsyncError(async (req, res) => {
     if (!artist) {
         return res.status(400).json({ message: "Artist not found" });
     }
-    console.log(song.path)
+    console.log(song.path);
     const songUpload = await uploadsinglesong(song.path);
     const myCloud = await cloudinary.v2.uploader.upload(coverImg.path, {
         folder: "coverimg",
@@ -94,10 +96,12 @@ export const uploadSingleSong = catchAsyncError(async (req, res) => {
 export const uploadAlbum = catchAsyncError(async (req, res) => {
     const artistId = req.params.artistId;
     const { title, genre, songsDetail } = req.body;
-    const { coverImg, songs } = req.files;
+    const coverImg = req.files?.coverImg?.[0];
+    const songs = req.files?.songs;
 
-    if (!title || !genre || !coverImg || !songsDetail) {
-        return res.status(400).json({ message: "All fields are required" });
+    if (!title || !genre || !coverImg || !songs) {
+        cleanupFiles([...(songs || []), coverImg]); // Cleanup uploaded files if validation fails
+        return res.status(400).json({ message: "All fields are required, including title, genre, cover image, and songs" });
     }
 
     const artist = await ArtistModel.findById(artistId);
