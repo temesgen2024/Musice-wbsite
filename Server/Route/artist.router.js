@@ -33,6 +33,14 @@ artistRouter.post(
         }
         next();
     },
+    (err, req, res, next) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ error: "File upload error: " + err.message });
+        } else if (err) {
+            return res.status(500).json({ error: "Server error: " + err.message });
+        }
+        next();
+    },
     uploadSingleSong
 );
 artistRouter.post(
