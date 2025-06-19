@@ -3,10 +3,6 @@ export default {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}", // Include all relevant file paths
     "./index.html"
-],
-  theme: {
-    extend: {},
-  },
+  ],
   plugins: [],
-}
-
+};

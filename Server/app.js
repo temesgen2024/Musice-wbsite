@@ -14,11 +14,45 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase limit to 10MB
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true })); // 
 // Increase limit to 10MB
 app.use(upload.any())
-app.use (express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
+// CORS configuration
+const allowedOrigins = [
+    'http://localhost:5173', // Vite dev server
+    'http://localhost:3000', // Alternative port
+    'http://127.0.0.1:5173', // Alternative localhost format
+];
 
-app.options('*', cors());
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true
+}));
+
+// Handle preflight requests for all routes
+app.options('*', cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true
+}));
 app.use(errorHandler)
 
 // routes
@@ -26,4 +60,4 @@ app.use('/api/users', UserRouter);
 app.use('/api/admin', AdminRouter);
 app.use('/api/artist', artistRouter);
 
-export {app}
+export { app }
