@@ -19,7 +19,8 @@ export const registerUser = catchAsyncError(async (req, res) => {
   const user = { name, email, password };
   const activationToken = createActivationToken(user);
   const activationCode = activationToken.activationCode;
-
+  console.log(activationCode)
+  console.log(activationToken.token)
   const data = {
     user: { name: user.name },
     activationCode,
@@ -94,6 +95,8 @@ export const loginUser = catchAsyncError(async (req, res) => {
     return res.status(400).json({ message: "Invalid email or password" });
   }
 
+  console.log(user)
+
   sendTokens(user, 200, res);
 });
 
@@ -162,6 +165,7 @@ export const getUserProfile = catchAsyncError(async (req, res) => {
   }
   const userId = req.user._id;
   const userData = await userService.getUserProfile(userId);
+  console.log(userData)
   return res.status(200).json({ success: true, user: userData });
 });
 
