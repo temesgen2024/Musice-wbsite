@@ -116,6 +116,7 @@ export const updateProfile = catchAsyncError(async (req, res) => {
   if (!userId) {
     return res.status(400).json({ message: "User not found" });
   }
+  console.log(req.body);
 
   const { name, password, avatar, bio, genres, socialLinks } = req.body;
 
@@ -165,7 +166,6 @@ export const getUserProfile = catchAsyncError(async (req, res) => {
   }
   const userId = req.user._id;
   const userData = await userService.getUserProfile(userId);
-  console.log(userData)
   return res.status(200).json({ success: true, user: userData });
 });
 
@@ -195,11 +195,11 @@ export const followUnfollowArtist = catchAsyncError(async (req, res) => {
 });
 
 export const getAllFollowing = catchAsyncError(async (req, res) => {
-    const userId = req.user._id;
-    const user = await userModel.findById(userId)
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+  const userId = req.user._id;
+  const user = await userModel.findById(userId)
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
 
-    }
-    return res.status(200).json({ success: true, followingArtists: user.followingArtists});
+  }
+  return res.status(200).json({ success: true, followingArtists: user.followingArtists });
 });
